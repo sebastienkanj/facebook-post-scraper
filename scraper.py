@@ -12,9 +12,8 @@ def _extract_html(bs_data):
     postBigDict = list()
 
     for item in k:
-
+	#print(item)
         # Post Text
-
         actualPosts = item.find_all(attrs={"data-testid": "post_message"})
         postDict = dict()
         for posts in actualPosts:
@@ -25,6 +24,19 @@ def _extract_html(bs_data):
 
             postDict['Post'] = text
 
+	# Post Date
+	postDate = item.find(class_="_5ptz")
+	#print(postDate.get('data-utime'))
+	postDict['Date'] = postDate.get('data-utime')
+
+	# Post Videos
+	postVideos = item.find(class_="async_saving _400z _2-40 _5pcq")
+        #print(postVideos)
+        postDict['Video'] = ""
+        if postVideos is not None:
+                #print(postVideos.get('href'))
+                #print("El video es el siguiente: ", postVideos.find('a').get('href'))
+                postDict['Video'] = "https://facebook.com"+postVideos.get('href')
         # Links
 
         postLinks = item.find_all(class_="_6ks")
@@ -36,7 +48,7 @@ def _extract_html(bs_data):
 
         postPictures = item.find_all(class_="scaledImageFitWidth img")
         postDict['Image'] = ""
-        for postPicture in postPictures:
+	for postPicture in postPictures:
             postDict['Image'] = postPicture.get('src')
 
         # Comments
@@ -45,7 +57,6 @@ def _extract_html(bs_data):
         postDict['Comments'] = dict()
 
         for comment in postComments:
-
             if comment.find(class_="_6qw4") is None:
                 continue
 
